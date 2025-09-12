@@ -19,17 +19,31 @@ jobs:
       with:
         python-version: "3.10"
 
-    - name: Crear entorno virtual e instalar dependencias
+    - name: Instalar dependencias
       run: |
         python -m venv venv
-        ./venv/bin/pip install --upgrade pip
-        ./venv/bin/pip install -r requirements.txt
+        source venv/bin/activate
+        pip install -r requirements.txt
 
     - name: Iniciar servidor FastAPI
       run: |
-        ./venv/bin/uvicorn app:app --host 0.0.0.0 --port 8000 &
-        sleep 20
+        source venv/bin/activate
+        nohup uvicorn app:app --host 0.0.0.0 --port 8000 > server.log 2>&1 &
+
+    - name: Esperar a que el servidor esté listo
+      run: |
+        sudo apt-get install -y curl
+        for i in {1..20}; do
+          if curl -s http://localhost:8000/docs > /dev/null; then
+            echo "Servidor listo!"
+            break
+          else
+            echo "Esperando servidor... intento $i"
+            sleep 3
+          fi
+        done
 
     - name: Ejecutar pruebas de API
       run: |
-        ./venv/bin/pytest --maxfail=5 --disable-warnings --alluredir=allure-results
+        source venv/bin/activate
+        pytest --maxfail=5 --disable-warnings --alluredir=allure-results
