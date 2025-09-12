@@ -28,7 +28,7 @@ jobs:
     - name: Iniciar servidor FastAPI
       run: |
         ./venv/bin/uvicorn app:app --host 0.0.0.0 --port 8000 &
-        sleep 5
+        sleep 20
 
     - name: Ejecutar pruebas de API
       run: |
