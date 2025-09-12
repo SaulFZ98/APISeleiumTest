@@ -1,1 +1,7 @@
-pip install fastapi uvicorm pytest allure-pytest requests pydantic selenium
+fastapi
+uvicorm
+pytest
+allure-pytest
+requests
+pydantic
+selenium
