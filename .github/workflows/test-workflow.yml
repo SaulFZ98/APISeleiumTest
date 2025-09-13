@@ -1,42 +1,35 @@
-name: CI - Test FastAPI
+name: Run API tests
 
-on:
-  push:
-    branches: [ "main", "master" ]
-  pull_request:
-    branches: [ "main", "master" ]
+on: [push, pull_request]
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Clonar el repositorio
-      uses: actions/checkout@v3
+    - uses: actions/checkout@v3
 
-    - name: Configurar Python
-      uses: actions/setup-python@v3
+    - name: Set up Python
+      uses: actions/setup-python@v4
       with:
-        python-version: "3.10"
+        python-version: 3.10
 
-    - name: Instalar dependencias
+    - name: Install dependencies
       run: |
-        python -m venv venv
-        source venv/bin/activate
-        pip install --upgrade pip
+        python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Iniciar servidor FastAPI
+    - name: Start FastAPI server
       run: |
-        source venv/bin/activate
-        uvicorn api.main:app --host 0.0.0.0 --port 8000 &
-        sleep 20
+        uvicorn api.main:app --host 127.0.0.1 --port 8000 &
+        # Esperar hasta que el servidor esté activo (máximo 30 segundos)
+        for i in {1..30}; do
+          curl --fail http://127.0.0.1:8000 && break
+          echo "Esperando a que FastAPI arranque..."
+          sleep 1
+        done
 
-    - name: Verificar que FastAPI respondió
-      run: |
-        curl --fail http://127.0.0.1:8000 || (echo "FastAPI NO respondió" && exit 1)
-
-    - name: Ejecutar pruebas
-      run: |
-        source venv/bin/activate
-        pytest --maxfail=5 --disable-warnings --alluredir=allure-results
+    - name: Run tests
+      env:
+        BASE_URL: http://127.0.0.1:8000
+      run: pytest
