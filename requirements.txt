@@ -5,3 +5,4 @@ allure-pytest
 requests
 pydantic
 selenium
+email-validator

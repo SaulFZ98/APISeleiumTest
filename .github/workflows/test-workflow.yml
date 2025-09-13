@@ -25,16 +25,20 @@ jobs:
         source venv/bin/activate
         pip install --upgrade pip
         pip install -r requirements.txt
-         pip install "pydantic[email]"
+         
 
     - name: Iniciar servidor FastAPI
       run: |
-       uvicorn api.main:app --host 127.0.0.1 --port 8000 &
-        for i in {1..30}; do
-          curl --fail http://127.0.0.1:8000 && break
-          echo "Waiting for FastAPI to start..."
-          sleep 1
-        done
+       uvicorn api.main:app --host 0.0.0.0 --port 8000 > server.log 2>&1 &
+       for i in {1..30}; do
+          if grep -q "Application startup complete" server.log; then
+            echo "Servidor arrancó completamente!"
+            break
+          fi
+            echo "Esperando a que FastAPI arranque... intento $i"
+            sleep 1
+       done
+       cat server.log
 
     - name: Verificar que FastAPI respondió
       run: |
