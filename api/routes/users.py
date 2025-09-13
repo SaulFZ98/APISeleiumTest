@@ -15,7 +15,7 @@ router = APIRouter()
 class UserIn(BaseModel):
     name: str = Field(...,min_length=2,max_length=50)
     email : EmailStr
-    age : Optional[int] = Field(None, gt=0, lt=120)
+    age : int = Field(..., gt=0, lt=120)
 
 #modelo de salida,  este modelo extiende UserIn y agrega un campo id, se usa para representar el objeto final que devuelve la API
 class User(UserIn):
@@ -47,7 +47,7 @@ def get_user():
 
 #obtener un usuario por ID
 @router.get("/users/{user_id}",response_model=User)
-def get_user(user_id: str):
+def get_user_for_id(user_id: str):
     for user in fake_db:
         if user.id == user_id:
             return user

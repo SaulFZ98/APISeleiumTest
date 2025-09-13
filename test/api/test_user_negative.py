@@ -6,7 +6,7 @@ import requests # para hacer peticiones HTTp a la API
 import uuid #para generar identificadores aleatorios
 
 
-BASE_URL = "http://127.0.0.1:8000" # definimos la URL de la API de FastApi con uvicorn
+BASE_URL = "http://127.0.0.1:8000"
 
 
 @allure.feature("User Management - Negative") # este decorador define una categoria principal o funcionalidad de alti nivel a la que pertenece la prueba y en el reporte de allure agrupara todas las pruebas de esta categoria
