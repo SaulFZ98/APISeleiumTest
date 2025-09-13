@@ -28,7 +28,7 @@ jobs:
     - name: Iniciar servidor FastAPI
       run: |
         source venv/bin/activate
-        nohup uvicorn app:app --host 0.0.0.0 --port 8000 > server.log 2>&1 &
+        nohup uvicorn api.main:app --host 0.0.0.0 --port 8000 > server.log 2>&1 &
 
     - name: Esperar a que el servidor esté listo
       run: |
