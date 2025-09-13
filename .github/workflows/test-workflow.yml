@@ -23,19 +23,20 @@ jobs:
       run: |
         python -m venv venv
         source venv/bin/activate
+        pip install --upgrade pip
         pip install -r requirements.txt
 
     - name: Iniciar servidor FastAPI
       run: |
         source venv/bin/activate
-        uvicorn api.main:app --host 0.0.0.0 --port 8000 &
-        sleep 20  # Da tiempo a que arranque el servidor
+        uvicorn api.routes.main:app --host 0.0.0.0 --port 8000 &
+        sleep 20
 
-    -  name: Verificar que el servidor esté levantado
-       run: |
+    - name: Verificar que FastAPI respondió
+      run: |
         curl --fail http://127.0.0.1:8000 || (echo "FastAPI NO respondió" && exit 1)
 
-    - name: Ejecutar pruebas de API
+    - name: Ejecutar pruebas
       run: |
         source venv/bin/activate
         pytest --maxfail=5 --disable-warnings --alluredir=allure-results
