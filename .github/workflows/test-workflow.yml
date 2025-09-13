@@ -28,20 +28,8 @@ jobs:
     - name: Iniciar servidor FastAPI
       run: |
         source venv/bin/activate
-        nohup uvicorn api.main:app --host 0.0.0.0 --port 8000 > server.log 2>&1 &
-
-    - name: Esperar a que el servidor esté listo
-      run: |
-        sudo apt-get install -y curl
-        for i in {1..20}; do
-          if curl -s http://localhost:8000/docs > /dev/null; then
-            echo "Servidor listo!"
-            break
-          else
-            echo "Esperando servidor... intento $i"
-            sleep 3
-          fi
-        done
+        uvicorn api.main:app --host 0.0.0.0 --port 8000 &
+        sleep 5  # Da tiempo a que arranque el servidor
 
     - name: Ejecutar pruebas de API
       run: |
