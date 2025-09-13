@@ -28,8 +28,12 @@ jobs:
     - name: Iniciar servidor FastAPI
       run: |
         source venv/bin/activate
-        uvicorn api.main:app --host 0.0.0.0 --port 8000 &
+        uvicorn api.routes.main:app --host 0.0.0.0 --port 8000 &
         sleep 5  # Da tiempo a que arranque el servidor
+
+    -  name: Verificar que el servidor esté levantado
+       run: |
+        curl --fail http://127.0.0.1:8000 || (echo "FastAPI NO respondió" && exit 1)
 
     - name: Ejecutar pruebas de API
       run: |
