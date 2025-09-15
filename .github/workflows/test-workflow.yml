@@ -48,7 +48,7 @@ jobs:         # define un trabajo (job) llamado test  que se ejecutara en un sis
         
 
     - name: Run API test with Allure    #sube esos resultados como artefacto descargable desde la interfaz de github actions
-      uses: actions/upload-artifact@v3   # este paso usa una accion oficial de github para subir artefactos (archivos o carpetas generadas por el workflow ) v3 es la version de la accion
+      uses: actions/upload-artifact@v4   # este paso usa una accion oficial de github para subir artefactos (archivos o carpetas generadas por el workflow ) v3 es la version de la accion
       with:
         name: allurereports              # nombre con el que se guardara el artefacto
         path: allurereports              #es la ruta local en el runner donde se encuentran los archivos a subir
