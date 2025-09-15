@@ -1,27 +1,33 @@
-name: Run API tests
+#este archivo es la forma en que github sabe que hacer con el codigo cada vez que ocurre un evento push pr etc, define los pasos a seguir de automatizacion
+# jobs: conjunto de tareas que se ejecutan
+# steps: instrucciones paso a paso
+# runs_on sistema operativo del runner ubunty, windows mac
 
-on: [push, pull_request]
 
-jobs:
+name: Run API tests  # nombre del workflow que aparece en github actions
+
+on: [push, pull_request]  #define cuando se debe de ejecutar el workflow en este caso cada que se realiza un push(cada que se hace un push al repositorio) o un pullrequest (cada que alguien crea o actualiza in pr)
+
+jobs:         # define un trabajo (job) llamado test  que se ejecutara en un sistema operativo llamado ubuntu en la nube
   test:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v3    # primer paso clona tu codigo del repositorio
 
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: "3.10"
+        python-version: "3.10"           # segundo paso configura python 3.10 en el runner (maquina virtual)
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Start FastAPI server
-      run: |
-        uvicorn api.main:app --host 127.0.0.1 --port 8000 > server.log 2>&1 &
+    - name: Start FastAPI server                           # inicia el servidor FASTAPI usando Uvicorn, se ejecuta en segundo plano con &  luego hace un bucle con curl para esperar que fastapi este disponible, guarda y muestra los logs con server.log por si hay errores
+      run: |                        
+        uvicorn api.main:app --host 127.0.0.1 --port 8000 > server.log 2>&1 &      
         echo "Esperando que FastAPI arranque..."
         for i in {1..15}; do
           if curl --fail http://127.0.0.1:8000; then
@@ -31,10 +37,18 @@ jobs:
           echo "Intento $i: FastAPI aún no responde..."
           sleep 1
         done
-        echo "📜 Log de servidor FastAPI:"
+        echo " Log de servidor FastAPI:"
         cat server.log
 
-    - name: Run tests
+    - name: Run tests       # ejecuta las pruebas de pytest,usa la BASE_URL como variable de entorno (los test deben hacer request.post(BASE_URL + ...)
       env:
         BASE_URL: http://127.0.0.1:8000
-      run: pytest
+      run: |                                    # este comando ejecuta los test y genera los resultados compatibles con allure
+        pytest --alluredir=allurereports     
+        
+
+    - name: Run API test with Allure    #sube esos resultados como artefacto descargable desde la interfaz de github actions
+      uses: actions/upload-artifact@v3   # este paso usa una accion oficial de github para subir artefactos (archivos o carpetas generadas por el workflow ) v3 es la version de la accion
+      with:
+        name: allurereports              # nombre con el que se guardara el artefacto
+        path: allurereports              #es la ruta local en el runner donde se encuentran los archivos a subir
