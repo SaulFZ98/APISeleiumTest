@@ -6,3 +6,6 @@ requests
 pydantic
 selenium
 email-validator
+bandit
+locust
+prometheus-client

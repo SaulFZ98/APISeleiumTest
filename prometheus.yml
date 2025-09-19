@@ -1,0 +1,7 @@
+global:
+  scrape_interval: 10s # cada cuanto tiempo recolecta datos
+
+scrape_config_files:
+  - job_name: "fastapi"
+    static_config:
+      - targets: ["fastapi:8000"]

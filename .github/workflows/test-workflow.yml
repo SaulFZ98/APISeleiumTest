@@ -25,6 +25,12 @@ jobs:         # define un trabajo (job) llamado test  que se ejecutara en un sis
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
+    - name: Run Bandit security analysis   #analiza tu codigo python en busca de vulnerabilidad de seguridad funciones peligrosas como eval() exec(), gestion segura de contraseñas  uso incorrecto de archivos
+      run: |
+        pip install bandit
+        bandit -r . || true
+      #instala la herramienta, bandit -r ejecuta el analisis sobre todo el proyecto -r(significa  que escanea todos los subdirectorios) . siginifica desde el directorio actual, || true previene que el pipeline falle si encuentra vulnerabilidad
+
     - name: Start FastAPI server                           # inicia el servidor FASTAPI usando Uvicorn, se ejecuta en segundo plano con &  luego hace un bucle con curl para esperar que fastapi este disponible, guarda y muestra los logs con server.log por si hay errores
       run: |                        
         uvicorn api.main:app --host 127.0.0.1 --port 8000 > server.log 2>&1 &      
@@ -44,7 +50,14 @@ jobs:         # define un trabajo (job) llamado test  que se ejecutara en un sis
       env:
         BASE_URL: http://127.0.0.1:8000
       run: |                                    # este comando ejecuta los test y genera los resultados compatibles con allure
-        pytest --alluredir=allurereports     
+        pytest --alluredir=allurereports   
+        
+
+    - name: Run locust Load Test      # Locust simula usuarios que hacen peticiones a tu API para evaluar su rendimiento
+      run: |
+        pip install locust
+        locust -f locustfile.py -- headless -u 10 -r 2 -t1m --host=http://127.0.0.1:8000
+     #-u 10 : 10 usuarios simulados, -r 2 : apareceran 2 usuarios/segundo, -t1m : duracion de 1 min,   --headless corre sin interfaz web ideal para CI, --host direccion base de la API
         
 
     - name: Run API test with Allure    #sube esos resultados como artefacto descargable desde la interfaz de github actions
