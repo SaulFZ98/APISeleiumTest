@@ -56,12 +56,7 @@ jobs:         # define un trabajo (job) llamado test  que se ejecutara en un sis
     - name: Run locust Load Test      # Locust simula usuarios que hacen peticiones a tu API para evaluar su rendimiento
       run: |
         pip install locust
-        locust -f locustfile.py \
-        -- headless \
-        -u 10 \
-        -r 2 \
-        -t 1m \
-        --host=http://127.0.0.1:8000
+        locust -f locustfile.py --headless -u 10 -r 2 -t 1m --host http://127.0.0.1:8000
      #-u 10 : 10 usuarios simulados, -r 2 : apareceran 2 usuarios/segundo, -t1m : duracion de 1 min,   --headless corre sin interfaz web ideal para CI, --host direccion base de la API
         
 
