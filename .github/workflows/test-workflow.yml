@@ -60,7 +60,7 @@ jobs:         # define un trabajo (job) llamado test  que se ejecutara en un sis
         -- headless \
         -u 10 \
         -r 2 \
-        -t1m \
+        -t 1m \
         --host=http://127.0.0.1:8000
      #-u 10 : 10 usuarios simulados, -r 2 : apareceran 2 usuarios/segundo, -t1m : duracion de 1 min,   --headless corre sin interfaz web ideal para CI, --host direccion base de la API
         
